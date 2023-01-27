@@ -1,0 +1,59 @@
+class Solution {
+public:
+    vector<string> findAllConcatenatedWordsInADict(vector<string>& words) {
+        
+        //Add words into an unordered_set
+        //for each letter in a word, add the new letter at the index to a substr and check to see if the
+        //substr is in the unordered set If we find a substr, continue processing that substr and add then
+        //add the next index to the stack, and have that index start from an empty substr increment word count
+        //once we find a word
+
+        std::unordered_set<std::string> wordSet;
+        std::vector<std::string> returnVal;
+
+        for (std::string word : words)
+        {
+            wordSet.emplace(word);
+        }
+
+        int wordCount = 0;
+        for (std::string word : words)
+        {
+            std::string subStr;
+            std::stack<std::pair<int, int>> indexToWordCountStack;
+            indexToWordCountStack.emplace(0, 0);
+
+            while (indexToWordCountStack.empty() == false)
+            {
+                int i = indexToWordCountStack.top().first;
+                int wordCount = indexToWordCountStack.top().second;
+                indexToWordCountStack.pop();
+                subStr = "";
+
+                while (i < word.size())
+                {
+                subStr.push_back(word[i]);
+
+                if (i == word.size() - 1 && wordSet.count(subStr) && wordCount > 0)
+                {
+                    //When we were popping previous values from our stack, we may have already added this word
+                    if(returnVal.size() == 0 || returnVal.back() != word)
+                    {
+                        returnVal.emplace_back(word);
+                    }
+                }
+                else if (wordSet.count(subStr))
+                {
+                    //Add the index after this one to the stack to check for more words and increment the word count
+                    indexToWordCountStack.emplace(i + 1, wordCount + 1);
+                }
+
+                ++i;
+                }
+            }
+        }
+
+        return returnVal;
+
+    }
+};
